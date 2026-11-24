@@ -1,7 +1,11 @@
-import importlib.util
+import streamlit as st
+import pandas as pd
+import numpy as np
+import joblib
+import zipfile
 import shutil
-import subprocess
-import sys
+import tempfile
+from pathlib import Path
 
 # Install joblib using uv if missing
 if importlib.util.find_spec("joblib") is None:
@@ -32,10 +36,6 @@ if importlib.util.find_spec("joblib") is None:
         )
 
 import joblib
-except Exception as exc:
-    st.error("Could not install or import joblib.")
-    st.code(f"{type(exc).__name__}: {exc}")
-    st.stop()
 
 
 st.set_page_config(
