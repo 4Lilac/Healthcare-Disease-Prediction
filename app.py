@@ -1,22 +1,37 @@
-
 import importlib.util
+import shutil
 import subprocess
 import sys
-import tempfile
-import zipfile
-from pathlib import Path
 
-import streamlit as st
-import pandas as pd
+# Install joblib using uv if missing
+if importlib.util.find_spec("joblib") is None:
 
-# Install joblib if missing
-try:
-    if importlib.util.find_spec("joblib") is None:
-        subprocess.check_call([
-            sys.executable, "-m", "pip",
-            "install", "joblib==1.6.0"
-        ])
-    import joblib
+    uv_path = shutil.which("uv")
+
+    if uv_path is None:
+        raise RuntimeError("UV package manager was not found.")
+
+    result = subprocess.run(
+        [
+            uv_path,
+            "pip",
+            "install",
+            "--python",
+            sys.executable,
+            "joblib==1.6.0"
+        ],
+        capture_output=True,
+        text=True
+    )
+
+    if result.returncode != 0:
+        raise RuntimeError(
+            "Joblib installation failed:\n"
+            + result.stdout
+            + result.stderr
+        )
+
+import joblib
 except Exception as exc:
     st.error("Could not install or import joblib.")
     st.code(f"{type(exc).__name__}: {exc}")
